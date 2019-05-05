@@ -9,6 +9,7 @@
 		public function __construct() {
 			add_action( 'admin_menu', array( $this, 'create_plugin_settings_page' ) );
 			add_action( 'admin_init', array( $this, 'setup_sections' ) );
+			add_action( 'admin_init', array( $this, 'setup_fields' ) );
 		}
 
 		public function create_plugin_settings_page() {
@@ -43,7 +44,27 @@
 		}
 
 		public function section_callback($args) {
-			echo 'Hello World';
+			switch( $args['id'] ) {
+				case 'our_first_section':
+					echo 'This is the first section!';
+					break;
+				case 'our_second_section':
+					echo 'This is the second section!';
+					break;
+				case 'our_third_section':
+					echo 'This is the third section!';
+					break;
+			}
+		}
+
+		public function setup_fields() {
+    	add_settings_field( 'our_first_field', 'First Fields', array( $this, 'field_callback' ), 'form_filter_fields', 'our_first_section' );
+			register_setting( 'form_filter_fields', 'our_first_field' );
+		}
+
+		public function field_callback( $args ) {
+			var_dump($args);
+			echo '<input name="our_first_field" id="our_first_field" type="text" value="' . get_option( 'our_first_field' ) . '" />';
 		}
 	}
 
