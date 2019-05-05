@@ -28,6 +28,7 @@
 		public function plugin_settings_page_content() { ?>
 			<div class="wrap">
 				<h2>Form Filter Plugin</h2>
+				<?php settings_errors(); ?>
 				<form method="post" action="options.php">
 					<?php
 						settings_fields( $this->slug );
@@ -74,7 +75,7 @@
 					'default' => '01/01/2015'
 				),
 				array(
-					'uid' => 'our_second_section',
+					'uid' => 'our_second_field',
 					'label' => 'My Text Area',
 					'section' => 'our_first_section',
 					'type' => 'textarea',
@@ -83,6 +84,21 @@
 					'helper' => 'This is helper text',
 					'supplemental' => 'some supplemental text',
 					'default' => 'hello text area'
+				),
+				array(
+					'uid' => 'our_third_field',
+					'label' => 'Select Field',
+					'section' => 'our_first_section',
+					'type' => 'select',
+					'options' => array(
+						'yes' => 'Yes!!',
+						'no' => 'No way dude!',
+						'maybe' => 'Maybe?!'
+					),
+					'placeholder' => 'This is placeholder text',
+					'helper' => 'some more helper text',
+					'supplemental' => 'I am underneath!',
+					'default' => 'maybe'
 				)
 			);
 			foreach( $fields as $field ) {
@@ -105,6 +121,15 @@
 				case 'textarea':
 					printf( '<textarea name="%1$s" id="%1$s" placeholder="%2$s" rows="5" cols="50">%3$s</textarea>', $args['uid'], $args['placeholder'], $value );
 					break;
+				case 'select':
+					if( ! empty( $args['options'] ) && is_array( $args['options'] ) ) {
+						$options_markup = '';
+						foreach( $args['options'] as $key => $label) {
+							$options_markup .= sprintf('<option value="%s" %s>%s</option>', $key, selected( $value, $key, false), $label);
+						}
+						printf('<select name="%1$s" id="%1$s">%2$s</select>', $args['uid'], $options_markup );
+					}
+					break;	
 			}
 
 			if( $helper = $args['helper'] ) {
