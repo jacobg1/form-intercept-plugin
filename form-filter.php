@@ -7,6 +7,7 @@
 
 		// hook into admin menu action
 		public function __construct() {
+			$this->slug = 'form_filter_fields';
 			add_action( 'admin_menu', array( $this, 'create_plugin_settings_page' ) );
 			add_action( 'admin_init', array( $this, 'setup_sections' ) );
 			add_action( 'admin_init', array( $this, 'setup_fields' ) );
@@ -16,12 +17,12 @@
 			$page_title = 'Form Filter Settings Page';
 			$menu_title = 'Form Fitler Plugin';
 			$capability = 'manage_options';
-			$slug = 'form_filter_fields';
+			// $slug = 'form_filter_fields';
 			$callback = array( $this, 'plugin_settings_page_content' );
 			$icon = 'dashicons-admin-plugin';
 			$position = 100;
 
-			add_menu_page( $page_title, $menu_title, $capability, $slug, $callback, $icon, $position );
+			add_menu_page( $page_title, $menu_title, $capability, $this->slug, $callback, $icon, $position );
 		}
 
 		public function plugin_settings_page_content() { ?>
@@ -29,8 +30,8 @@
 				<h2>Form Filter Plugin</h2>
 				<form method="post" action="options.php">
 					<?php
-						settings_fields( 'form_filter_fields' );
-						do_settings_sections( 'form_filter_fields' );
+						settings_fields( $this->slug );
+						do_settings_sections( $this->slug );
 						submit_button();
 					?>
 				</form>
@@ -38,9 +39,9 @@
 		}
 
 		public function setup_sections() {
-			add_settings_section( 'our_first_section', 'My First Section Title', array( $this, 'section_callback' ), 'form_filter_fields');
-			add_settings_section( 'our_second_section', 'My Second Section Title', array( $this, 'section_callback' ), 'form_filter_fields');
-			add_settings_section( 'our_third_section', 'My Third Section Title', array( $this, 'section_callback' ), 'form_filter_fields');
+			add_settings_section( 'our_first_section', 'My First Section Title', array( $this, 'section_callback' ), $this->slug );
+			add_settings_section( 'our_second_section', 'My Second Section Title', array( $this, 'section_callback' ), $this->slug );
+			add_settings_section( 'our_third_section', 'My Third Section Title', array( $this, 'section_callback' ), $this->slug );
 		}
 
 		public function section_callback($args) {
@@ -58,13 +59,61 @@
 		}
 
 		public function setup_fields() {
-    	add_settings_field( 'our_first_field', 'First Fields', array( $this, 'field_callback' ), 'form_filter_fields', 'our_first_section' );
-			register_setting( 'form_filter_fields', 'our_first_field' );
+    	// add_settings_field( 'our_first_field', 'First Fields', array( $this, 'field_callback' ), $this->slug, 'our_first_section' );
+			// register_setting( $this->slug, 'our_first_field' );
+			$fields = array(
+				array(
+					'uid' => 'our_first_field',
+					'label' => 'My Date',
+					'section' => 'our_first_section',
+					'type' => 'text',
+					'options' => 'false',
+					'placeholder' => 'DD/MM/YYYY',
+					'helper' => 'Helper Text',
+					'supplemental' => 'Text Underneath!',
+					'default' => '01/01/2015'
+				),
+				array(
+					'uid' => 'our_second_section',
+					'label' => 'My Text Area',
+					'section' => 'our_first_section',
+					'type' => 'textarea',
+					'options' => false,
+					'placeholder' => 'My text area',
+					'helper' => 'This is helper text',
+					'supplemental' => 'some supplemental text',
+					'default' => 'hello text area'
+				)
+			);
+			foreach( $fields as $field ) {
+				add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), $this->slug, $field['section'], $field );
+				register_setting( $this->slug, $field['uid'] );
+			}
 		}
 
 		public function field_callback( $args ) {
-			var_dump($args);
-			echo '<input name="our_first_field" id="our_first_field" type="text" value="' . get_option( 'our_first_field' ) . '" />';
+			$value = get_option( $args['uid'] );
+
+			if( ! $value ) {
+				$value = $args['default'];
+			}
+
+			switch( $args['type'] ) {
+				case 'text':
+					printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $args['uid'], $args['type'], $args['placeholder'], $value );
+					break;
+				case 'textarea':
+					printf( '<textarea name="%1$s" id="%1$s" placeholder="%2$s" rows="5" cols="50">%3$s</textarea>', $args['uid'], $args['placeholder'], $value );
+					break;
+			}
+
+			if( $helper = $args['helper'] ) {
+				printf( '<span class="helper">%s</span>', $helper );
+			}
+
+			if( $supplemental = $args['supplemental'] ) {
+				printf( '<p class="description">%s</p>', $supplemental );
+			}
 		}
 	}
 
