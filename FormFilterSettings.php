@@ -1,9 +1,6 @@
 <?php
-	/** 
-	 * Plugin Name: Form Filter
-	*/
 
-	class Form_Fiter_Plugin {
+	class Form_Fiter_Plugin_Settings {
 
 		// hook into admin menu action
 		public function __construct() {
@@ -40,15 +37,15 @@
 		}
 
 		public function setup_sections() {
-			add_settings_section( 'our_first_section', 'My First Section Title', array( $this, 'section_callback' ), $this->slug );
-			add_settings_section( 'our_second_section', 'My Second Section Title', array( $this, 'section_callback' ), $this->slug );
-			add_settings_section( 'our_third_section', 'My Third Section Title', array( $this, 'section_callback' ), $this->slug );
+			add_settings_section( 'first_section', 'Iterable Integration Settings', array( $this, 'section_callback' ), $this->slug );
+			// add_settings_section( 'our_second_section', 'My Second Section Title', array( $this, 'section_callback' ), $this->slug );
+			// add_settings_section( 'our_third_section', 'My Third Section Title', array( $this, 'section_callback' ), $this->slug );
 		}
 
 		public function section_callback($args) {
 			switch( $args['id'] ) {
-				case 'our_first_section':
-					echo 'This is the first section!';
+				case 'first_section':
+					echo 'Set up Iterable form integration';
 					break;
 				case 'our_second_section':
 					echo 'This is the second section!';
@@ -60,46 +57,57 @@
 		}
 
 		public function setup_fields() {
-    	// add_settings_field( 'our_first_field', 'First Fields', array( $this, 'field_callback' ), $this->slug, 'our_first_section' );
+    	// add_settings_field( 'our_first_field', 'First Fields', array( $this, 'field_callback' ), $this->slug, 'first_section' );
 			// register_setting( $this->slug, 'our_first_field' );
 			$fields = array(
 				array(
-					'uid' => 'our_first_field',
-					'label' => 'My Date',
-					'section' => 'our_first_section',
+					'uid' => 'iterable_api_key',
+					'label' => 'Iterable API Key',
+					'section' => 'first_section',
 					'type' => 'text',
 					'options' => 'false',
-					'placeholder' => 'DD/MM/YYYY',
-					'helper' => 'Helper Text',
-					'supplemental' => 'Text Underneath!',
-					'default' => '01/01/2015'
+					'placeholder' => 'Enter API Key',
+					// 'helper' => 'Helper Text',
+					'supplemental' => 'Enter your Iterable API Key.',
+					// 'default' => '**************'
 				),
 				array(
-					'uid' => 'our_second_field',
+					'uid' => 'iterable_list_id',
+					'label' => 'Iterable List Id',
+					'section' => 'first_section',
+					'type' => 'text',
+					'options' => 'false',
+					'placeholder' => 'Enter List Id',
+					// 'helper' => 'Helper Text',
+					'supplemental' => 'Enter your Iterable List Id.',
+					// 'default' => '**************'
+				),
+				array(
+					'uid' => 'list_of_form_ids',
 					'label' => 'My Text Area',
-					'section' => 'our_first_section',
+					'section' => 'first_section',
 					'type' => 'textarea',
 					'options' => false,
-					'placeholder' => 'My text area',
-					'helper' => 'This is helper text',
-					'supplemental' => 'some supplemental text',
-					'default' => 'hello text area'
+					// 'placeholder' => 'Ex: form_id_1',
+					// 'helper' => 'This is helper text',
+					'supplemental' => 'Enter form ids, separated by a comma.',
+					// 'default' => 'hello text area'
 				),
-				array(
-					'uid' => 'our_third_field',
-					'label' => 'Select Field',
-					'section' => 'our_first_section',
-					'type' => 'select',
-					'options' => array(
-						'yes' => 'Yes!!',
-						'no' => 'No way dude!',
-						'maybe' => 'Maybe?!'
-					),
-					'placeholder' => 'This is placeholder text',
-					'helper' => 'some more helper text',
-					'supplemental' => 'I am underneath!',
-					'default' => 'maybe'
-				)
+				// array(
+				// 	'uid' => 'our_third_field',
+				// 	'label' => 'Select Field',
+				// 	'section' => 'first_section',
+				// 	'type' => 'select',
+				// 	'options' => array(
+				// 		'yes' => 'Yes!!',
+				// 		'no' => 'No way dude!',
+				// 		'maybe' => 'Maybe?!'
+				// 	),
+				// 	'placeholder' => 'This is placeholder text',
+				// 	'helper' => 'some more helper text',
+				// 	'supplemental' => 'I am underneath!',
+				// 	'default' => 'maybe'
+				// )
 			);
 			foreach( $fields as $field ) {
 				add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), $this->slug, $field['section'], $field );
@@ -142,6 +150,6 @@
 		}
 	}
 
-	new Form_Fiter_Plugin();
+	new Form_Fiter_Plugin_Settings();
 
 ?>
